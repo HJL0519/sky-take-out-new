@@ -8,12 +8,10 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
-import com.sky.entity.Setmeal;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
-import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -105,5 +103,36 @@ public class DishServiceImpl implements DishService {
         dishFlavorMapper.deleteByDishIds(ids);
 
 
+    }
+
+    @Override
+    public DishVO getById(Long id) {
+        Dish dish = dishMapper.getByIdWithFlavor(id);
+        List<DishFlavor> dishFlavors = dishFlavorMapper.getByIdWithFlavor(id);
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish,dishVO);
+        BeanUtils.copyProperties(dishFlavors,dishVO);
+        return dishVO;
+    }
+
+    @Override
+    public void updateWithFlavor(DishDTO dishDTO) {
+
+        //修改菜品表基本信息
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO,dish);
+        dishMapper.update(dish);
+
+        //口味的操作有很多种可能性，故先把数据库中的全删除，再把修改后的数据插入
+        dishFlavorMapper.daleteByDishId(dishDTO.getId());
+
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if (flavors != null && flavors.size() >0){
+            flavors.forEach(dishFlavor -> {
+                dishFlavor.setDishId(dishDTO.getId());
+            });
+            //向口味表中插入n条数据
+            dishFlavorMapper.insertBatch(flavors);
+        }
     }
 }
