@@ -36,7 +36,8 @@ public class CommonController {
             //截取文件拓展名
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             String objectName = UUID.randomUUID() + extension;
-            aliOssUtil.upload(file.getBytes(),objectName);
+            String upload = aliOssUtil.upload(file.getBytes(), objectName);
+            return Result.success(upload);
         } catch (IOException e) {
             log.error("文件上传失败,{}",e);
         }
