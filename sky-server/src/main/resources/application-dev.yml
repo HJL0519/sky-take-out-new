@@ -7,7 +7,4 @@ sky:
     username: root
     password: 1234
 
-  alioss:
-    endpoint: oss-cn-nanjing.aliyuncs.com
-
-    bucket-name: web-tlias-hjl0519
+  
