@@ -114,6 +114,7 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     @Override
+    @Transactional
     public void startOrStop(Integer status, Long id) {
         //起售套餐时，如果套餐中包含了停售的菜品，则不能起售
         if (status == StatusConstant.ENABLE){
