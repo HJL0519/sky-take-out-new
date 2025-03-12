@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.websocket.server.PathParam;
 import java.util.List;
 
-@RestController
+@RestController("adminSetmealController")
 @RequestMapping("/admin/setmeal")
 @Slf4j
 @Api(tags = "套餐管理相关接口")

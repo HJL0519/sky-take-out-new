@@ -53,4 +53,26 @@
         </where>
         order by s.create_time desc
     </select>
+    
+    <select id="getList" resultType="com.sky.entity.Setmeal">
+        select * from setmeal 
+        <where>
+            <if test="name != null">
+                and name like conact('%',#{name},'%'),
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        order by create_time desc
+        </where>
+    </select>
+
+    <select id="getDishList" resultType="com.sky.vo.DishItemVO">
+        select sd.name,sd.copies,d.image,d.description
+        from setmeal_dish sd left join  dish d on sd.dish_id = d.id
+        where sd.setmeal_id = #{setmealId}
+    </select>
 </mapper>

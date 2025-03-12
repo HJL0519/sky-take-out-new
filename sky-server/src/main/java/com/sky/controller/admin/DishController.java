@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController("adminDishController")
 @Slf4j
 @RequestMapping("/admin/dish")
 @Api(tags = "菜品管理相关接口")
