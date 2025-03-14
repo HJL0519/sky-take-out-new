@@ -32,6 +32,7 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+
     @Autowired
     private OrderMapper orderMapper;
 
@@ -174,6 +175,18 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         return new PageResult(page.getTotal(),orderVOList);
+    }
+
+    // 根据订单id查询订单详情
+    @Override
+    public OrderVO details(Long id) {
+        OrderVO orderVO = new OrderVO();
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+        orderVO.setOrderDetailList(orderDetailList);
+
+        Orders orders = orderMapper.getById(id);
+        BeanUtils.copyProperties(orders,orderVO);
+        return orderVO;
     }
 
 
