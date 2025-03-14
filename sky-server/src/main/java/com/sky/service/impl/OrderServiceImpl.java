@@ -32,7 +32,6 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-
     @Autowired
     private OrderMapper orderMapper;
 
@@ -187,6 +186,44 @@ public class OrderServiceImpl implements OrderService {
         Orders orders = orderMapper.getById(id);
         BeanUtils.copyProperties(orders,orderVO);
         return orderVO;
+    }
+
+    @Override
+    public void userCancelById(Long id) throws Exception {
+        Orders orderDB = orderMapper.getById(id);
+
+        //校验订单是否存在
+        if(orderDB == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+        //支付状态 0未支付 1已支付 2退款
+        if (orderDB.getStatus() > 2){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Orders orders = new Orders();
+        orders.setId(orderDB.getId());
+
+        //订单处于待接单状态下取消，需要进行退款
+        if (orderDB.getStatus() == Orders.TO_BE_CONFIRMED ){
+            //调用微信支付退款接口
+            weChatPayUtil.refund(
+                    orderDB.getNumber(),
+                    orderDB.getNumber(),
+                    new BigDecimal(0.01),
+                    new BigDecimal(0.01)
+            );
+            orders.setStatus(Orders.REFUND);
+        }
+
+        //更新订单状态、取消原因、取消时间
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason("用户取消");
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+
     }
 
 

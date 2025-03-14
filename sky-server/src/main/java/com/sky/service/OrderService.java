@@ -29,4 +29,6 @@ public interface OrderService {
     PageResult pageQuery4User(OrdersPageQueryDTO ordersPageQueryDTO);
 
     OrderVO details(Long id);
+
+    void userCancelById(Long id) throws Exception;
 }
